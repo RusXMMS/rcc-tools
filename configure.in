@@ -1,0 +1,25 @@
+AC_INIT(rcc-recode.c)
+AM_INIT_AUTOMAKE(rcc_tools, `cat VERSION | sed -e s/CVS//`)
+AC_CONFIG_HEADERS(config.h)
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AM_PROG_LIBTOOL
+
+AC_CHECK_HEADERS(getopt.h dirent.h sys/types.h sys/file.h sys/stat.h)
+
+AC_CHECK_HEADER(librcc.h, 
+    [AC_CHECK_LIB(rcc, rccInit, 
+	[ 
+	    AC_DEFINE(HAVE_LIBRCC,1,[Defines if librcc is available])
+	],[
+	    AC_MSG_ERROR(LibRCC is required)
+	])
+    ],[
+	AC_MSG_ERROR(LibRCC is required)
+    
+    ])
+
+AC_OUTPUT([
+    Makefile
+])

@@ -1,3 +1,22 @@
+/*
+  rcc_recode - command line interface to LibRCC
+
+  Copyright (C) 2005-2008 Suren A. Chilingaryan <csa@dside.dyndns.org>
+
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of version 2 of the GNU General Public License as published
+  by the Free Software Foundation.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  more details.
+
+  You should have received a copy of the GNU General Public License along
+  with this program; if not, write to the Free Software Foundation, Inc.,
+  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -73,7 +92,9 @@ static struct option long_options[] = {
     {"cache",			required_argument, 0, OPT_CACHE },
     {"timeout",			required_argument, 0, OPT_TIMEOUT },
     {"force",			no_argument, 0, OPT_YES },
+#ifdef RCC_OPTION_OFFLINE
     {"allow-offline-processing",no_argument, 0, OPT_OFFLINE },
+#endif /* RCC_OPTION_OFFLINE */
     {"disable-subdirs",		no_argument, 0, OPT_SUBDIRS },
     {"stdin",			no_argument, &mode, MODE_STDIN },
     {"directory", 		no_argument, &mode, MODE_DIRECTORY },
@@ -165,12 +186,9 @@ static rcc_class classes[] = {
     { "pl", RCC_CLASS_STANDARD, "id3", NULL, "PlayList Title Encoding", 0},
     { "plfs", RCC_CLASS_STANDARD, "pl", NULL, "PlayList File Encoding", 0 },
     { "fs", RCC_CLASS_STANDARD, "LC_CTYPE", NULL, "FileSystem Encoding", 0 },
-    { "arc", RCC_CLASS_STANDARD, "in", NULL, "Archives Encoding", 0 },
     { "oem", RCC_CLASS_STANDARD, "in", NULL, "Zip OEM Encoding", 0 },
     { "iso", RCC_CLASS_STANDARD, "in", NULL, "Zip ISO Encoding", 0 },
     { "ftp", RCC_CLASS_STANDARD, "in", NULL, "FTP Encoding", 0 },
-    { "http", RCC_CLASS_STANDARD, "in", NULL, "HTTP Encoding", 0 },
-    { "ssh", RCC_CLASS_STANDARD, "in", NULL, "SSH Encoding", 0 },
     { NULL }
 };
 
@@ -200,7 +218,7 @@ int Directory(const char *arg);
 int main(int argc, char *argv[]) {
     rcc_language_id language_id, current_language_id, english_language_id;
     
-    char c;
+    unsigned char c;
     
     char *arg = NULL;
     
@@ -226,7 +244,7 @@ int main(int argc, char *argv[]) {
     char offline = 0;
     
     int option_index = 0;
-    while ((c = getopt_long(argc, argv, "yhe:f:l:t:", long_options, &option_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "yhe:f:l:t:c:", long_options, &option_index)) != (unsigned char)-1) {
 	switch (c) {
 	    case 0:
 	    break;
@@ -290,7 +308,7 @@ int main(int argc, char *argv[]) {
 		}
 		
 		if (!ldetect_force) {
-		    if (!strcasecmp(optarg, "off"))
+		    if ((optarg)&&(!strcasecmp(optarg, "off")))
 			ldetect = 0;
 		    else 
 			ldetect = 1;
@@ -373,7 +391,6 @@ int main(int argc, char *argv[]) {
     setlocale(LC_ALL, "");
     
 
-
     rccInit();
     rccInitDefaultContext(NULL, 0, 0, classes, 0);
     rccInitDb4(NULL, cache_name, 0);
@@ -401,9 +418,10 @@ int main(int argc, char *argv[]) {
 	rccSetOption(NULL, RCC_OPTION_CONFIGURED_LANGUAGES_ONLY, 0);
     }
 
+#ifdef RCC_OPTION_OFFLINE
     if (offline)
 	rccSetOption(NULL, RCC_OPTION_OFFLINE, 1);
-
+#endif /* RCC_OPTION_OFFLINE */
 
     if (from) {
 	source_class_id = GetClass(from);

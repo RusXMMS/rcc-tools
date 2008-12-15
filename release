@@ -36,15 +36,17 @@ cp -a * $RDIR/$rname
     cd $RDIR/$rname
     ./autogen.sh
     ./configure
-    make clean
+    make clean distclean distclean-am
     rm -rf autom4te*.cache
     rm -rf "{arch}"
     rm -rf `find . -name .arch-ids`
-    rm -rf `find . -name .deps`
+#    rm -rf `find . -name .deps`
     cd ..
     if [ -a $rname.tar.bz2 ]; then
 	rm -f $rname.tar.bz2
     fi
     tar cjf $rname.tar.bz2 $rname
     rm -rf $rname
+
+    scp $rname.tar.bz2 csa@dside.dyndns.org:/home/csa/public_html/files/rusxmms/
 )

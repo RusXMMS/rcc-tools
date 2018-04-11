@@ -41,6 +41,8 @@ cp -a * $RDIR/$rname
     rm -rf "{arch}"
     rm -rf `find . -name .arch-ids`
 #    rm -rf `find . -name .deps`
+    find . -name "*~" -print0 | xargs -0 rm -rf
+
     cd ..
     if [ -a $rname.tar.bz2 ]; then
 	rm -f $rname.tar.bz2

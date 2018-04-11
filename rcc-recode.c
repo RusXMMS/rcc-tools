@@ -1,7 +1,7 @@
 /*
   rcc_recode - command line interface to LibRCC
 
-  Copyright (C) 2005-2008 Suren A. Chilingaryan <csa@dside.dyndns.org>
+  Copyright (C) 2005-2018 Suren A. Chilingaryan <csa@suren.me>
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of version 2 of the GNU General Public License as published
